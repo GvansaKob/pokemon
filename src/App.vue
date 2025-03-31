@@ -15,7 +15,7 @@ import Pokedex from "./components/Pokedex.vue";
 const pokemons = ref([]);
 
 const fetchPokemon = async () => {
-  const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=20");
+  const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=50");
   const data = await response.json();
 
   const promises = data.results.map(async (pokemon) => {
