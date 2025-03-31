@@ -1,47 +1,28 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div class="p-5 text-center">
+    <h1 class="text-2xl font-bold">Pokedex</h1>
+    <button @click="fetchPokemon" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
+      Fetch Pokémon
+    </button>
+    <Pokedex :pokemons="pokemons" />
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script setup>
+import { ref } from "vue";
+import Pokedex from "./components/Pokedex.vue";
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+const pokemons = ref([]);
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+const fetchPokemon = async () => {
+  const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=20");
+  const data = await response.json();
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+  const promises = data.results.map(async (pokemon) => {
+    const res = await fetch(pokemon.url);
+    return res.json();
+  });
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+  pokemons.value = await Promise.all(promises);
+};
+</script>
