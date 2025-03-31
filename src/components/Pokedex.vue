@@ -27,7 +27,7 @@ defineProps(["pokemons"]);
 }
 
 .pokemon-card {
-  background: linear-gradient(135deg, #9b5da8, #6d1774);
+  background: linear-gradient(135deg, #74afd3, #1e4e7e);
   border: 2px solid #6a195d;
   border-radius: 12px;
   padding: 15px;
