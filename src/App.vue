@@ -1,13 +1,18 @@
 <template>
   <div class="p-5 text-center">
     <h1 class="text-2xl font-bold">Pokedex</h1>
+
     <button @click="fetchPokemon" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
       Fetch Pokémon
     </button>
 
-    <Powers v-if="showPowers" @filter="handleFilter" class="powers-container" />
+    <div v-if="pokemons.length > 0">
+      <input type="text" v-model="searchQuery" placeholder="Rechercher un Pokémon..." class="search-input" />
 
-    <Pokedex :pokemons="filteredPokemons" />
+      <Powers @filter="handleFilter" class="powers-container" />
+
+      <Pokedex :pokemons="filteredPokemons" />
+    </div>
   </div>
 </template>
 
@@ -18,9 +23,8 @@ import Powers from "./components/Powers.vue";
 
 const pokemons = ref([]);
 const selectedType = ref("");
-const showPowers = ref(false); // Etat pour gérer l'affichage du composant Powers
+const searchQuery = ref("");
 
-// Fonction pour récupérer les Pokémon depuis l'API
 const fetchPokemon = async () => {
   const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=50");
   const data = await response.json();
@@ -31,14 +35,27 @@ const fetchPokemon = async () => {
   });
 
   pokemons.value = await Promise.all(promises);
-  showPowers.value = true; // Afficher Powers après avoir récupéré les Pokémon
+};
+
+const normalizeText = (text) => {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 };
 
 const filteredPokemons = computed(() => {
-  if (!selectedType.value) return pokemons.value;
-  return pokemons.value.filter((pokemon) =>
-    pokemon.types.some((type) => type.type.name === selectedType.value)
-  );
+  return pokemons.value.filter((pokemon) => {
+    const matchesType =
+      !selectedType.value ||
+      pokemon.types.some((type) => type.type.name === selectedType.value);
+
+    const matchesSearch =
+      !searchQuery.value ||
+      normalizeText(pokemon.name).includes(normalizeText(searchQuery.value));
+
+    return matchesType && matchesSearch;
+  });
 });
 
 const handleFilter = (type) => {
@@ -47,6 +64,14 @@ const handleFilter = (type) => {
 </script>
 
 <style scoped>
+.search-input {
+  margin-top: 10px;
+  padding: 8px;
+  width: 50%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
 .powers-container {
   margin-top: 20px;
   background-color: white;
