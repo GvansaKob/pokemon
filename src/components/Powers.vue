@@ -2,16 +2,15 @@
 import { ref, defineEmits } from 'vue';
  
 const types = ref([
+  'tous les pokémon', 
   'normal', 'fire', 'water', 'grass', 'electric',
-  'ice', 'fighting', 'poison', 'ground', 'flying',
-  'psychic', 'bug', 'rock', 'ghost', 'dark',
-  'dragon', 'steel', 'fairy'
+  'poison', 'ground', 'flying', 'bug', 'fairy'
 ]);
- 
+
 const emit = defineEmits(['filter']);
- 
+
 const selectType = (type) => {
-  emit('filter', type);
+  emit('filter', type === 'tous les pokémon' ? '' : type);
 };
 </script>
  
@@ -44,5 +43,3 @@ button:hover {
   color: white;
 }
 </style>
- 
- 
